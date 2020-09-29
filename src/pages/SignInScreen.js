@@ -33,16 +33,7 @@ const SignInScreen = ({navigation}) => {
       setSearch({...search, message: '', error: false})
     }
 
-    const [search, setSearch] = useState({
-      userInfo: null,
-      searching: false,
-      searched: false,
-      message: '',
-      title: 'Bem vindo!',
-      error: false
-    });
-
-    const [data, setData] = useState({
+    const initialData = {
       crm: '',
       password: '',
       uf: '',
@@ -50,7 +41,27 @@ const SignInScreen = ({navigation}) => {
       secureTextEntry: true,
       isValidCRM: false,
       isValidPassword: true
-    });
+    };
+
+    const initialSearch = {
+      userInfo: null,
+      searching: false,
+      searched: false,
+      message: '',
+      title: 'Bem vindo!',
+      error: false
+    };
+
+    const [search, setSearch] = useState(initialSearch);
+    const clearSearch = () => {
+      setSearch({ ...initialSearch });
+    };
+
+    const [data, setData] = useState(initialData);
+    const clearData = () => {
+      const ufs = UFs;
+      setData({ ...initialData, ufs });
+    };
 
     useEffect(() => {
       if(data.ufs.length === 0){
@@ -144,8 +155,8 @@ const SignInScreen = ({navigation}) => {
     }
 
     const resetForm = () => {
-      // this.setData(initialData);
-      // this.setSearch(initialSearch);
+      clearData(UFs);
+      clearSearch();
     }
 
     const renderReset = () => (
