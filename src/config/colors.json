@@ -1,0 +1,23 @@
+{
+  "LOADING": "#bc2b78",
+  "BACKGROUND_MAIN": "#fff",
+  "BACKGROUND_SEC": "#009387",
+  "TITLE_MAIN": "#05375a",
+  "TEXT": "grey",
+  "BTN_MAIN_TEXT": "#fff",
+  "BTN_MAIN_LINEAR": ["#08d4c4", "#01ab9d"],
+  "PLACEHOLDER": "#666666",
+  "BTN_CLEAR": "#009387",
+  "LINK_TOUCH": "#009387",
+  "BACKGROUND_FOOTER": "#fff",
+  "FOOTER_TEXT": "#05375a",
+  "HEADER_TEXT": "#fff",
+  "BTN_BORDER_ACTION": "#f2f2f2",
+  "BTN_ERROR": "#FF0000",
+  "INPUT_FORM": "#05375a",
+  "ICON_GREEN": "green",
+  "TEXT_ERROR": "#721c24",
+  "TEXT_INFO": "#0c5460",
+  "BACKGROUND_ERROR": "#f8d7da",
+  "BACKGROUND_INFO": "#d1ecf1"
+}
