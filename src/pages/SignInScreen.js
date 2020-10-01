@@ -14,8 +14,6 @@ import * as Animatable from 'react-native-animatable';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 
-import { useTheme } from 'react-native-paper';
-
 import { AuthContext } from '../../src/components/context';
 
 import LinearButton from '../components/LinearButton'
@@ -23,10 +21,14 @@ import ClearButton from '../components/ClearButton'
 import AlertView from '../components/AlertView'
 
 import Users from '../../src/models/users';
-import UFs from '../../src/config/ufs';
+import Locations from '../util/Locations';
+import Permissions from '../util/Permissions';
+import Api from '../services/Api'
 import Colors from '../config/colors.json'
 
-const SignInScreen = ({navigation}) => {
+import {asyncStore, removeStore, USER} from '../util/Storages'
+
+const SignInScreen = ({navigation, route}) => {
 
 
     const cleanMessage = () => {
@@ -47,9 +49,8 @@ const SignInScreen = ({navigation}) => {
       userInfo: null,
       searching: false,
       searched: false,
-      message: '',
       title: 'Bem vindo!',
-      error: false
+      error: null
     };
 
     const [search, setSearch] = useState(initialSearch);
@@ -59,19 +60,28 @@ const SignInScreen = ({navigation}) => {
 
     const [data, setData] = useState(initialData);
     const clearData = () => {
-      const ufs = UFs;
+      const ufs = Locations.ufs();
       setData({ ...initialData, ufs });
     };
 
     useEffect(() => {
+      const { user } = route.params;
+      configUser(user);
+
       if(data.ufs.length === 0){
-        setData({...data, ufs: UFs});
+        setData(prevState => ({ ...prevState, ufs: Locations.ufs() }));
+        Permissions.executeWithGeolocation(localizacaoLiberada);
       }
     }, []);
 
-    const { colors } = useTheme();
-
     const { signIn } = React.useContext(AuthContext);
+
+
+    const localizacaoLiberada = () => {
+      Api.findAddressByCurrentLatLng(resultado => {
+        setData(prevState => ({ ...prevState, uf: resultado.sigla_uf }));
+      }) 
+    }
 
     const handleInputCrm = crmS => {
       const crm = crmS.replace(/[^0-9]/g, '')
@@ -113,7 +123,6 @@ const SignInScreen = ({navigation}) => {
             prompt="Estado de emissão"
             selectedValue={data.uf}
             style={styles.selectUF}
-            enabled={!search.userInfo}
             onValueChange={(itemValue, itemIndex) => handleSelectUF(itemValue)} >
           <Picker.Item label='UF' value='' />
           {
@@ -123,6 +132,21 @@ const SignInScreen = ({navigation}) => {
           }
         </Picker>
       )
+    }
+
+    const configUser = (userInfo) => {
+      if(userInfo){
+        const resultadoSearch = {
+          userInfo,
+          searched: true,
+          searching: false,
+          title: `Olá, ${userInfo.name}!`
+        }
+        setSearch(resultadoSearch);
+        
+        const {crm, uf, isValidCRM = true} = userInfo
+        setData(prevState => ({ ...prevState, crm, uf, isValidCRM }));
+      }
     }
 
     const findCrm = () => {
@@ -137,26 +161,23 @@ const SignInScreen = ({navigation}) => {
           userInfo: null,
           searched: true,
           searching: false,
-          error: true,
-          message: `O CRM '${uf}-${crm}' não existe`,
+          error: `CRM '${uf}-${crm}' não encontrado`,
           title: 'Ops...'
         }
         if(userInfos.length > 0){
-          resultadoSearch.userInfo = userInfos[0];
-          resultadoSearch.title = `Olá, ${resultadoSearch.userInfo.name}!`;
-          resultadoSearch.message = 'Por favor, informe sua senha para continuar'
-          resultadoSearch.error = false;
-          if(!resultadoSearch.userInfo.id){
-            resultadoSearch.message = `Localizamos o seu CRM, porém você ainda não possui cadastro no Prontow. \n\nFaça agora:`
-          }
+          const user = userInfos[0]
+          asyncStore(USER, user);
+          resultadoSearch.userInfo = user;
+          resultadoSearch.title = `Olá, ${user.name}!`;
         }
         setSearch({...search, ...resultadoSearch })
       }, 2000);
     }
 
     const resetForm = () => {
-      clearData(UFs);
+      clearData();
       clearSearch();
+      removeStore(USER);
     }
 
     const renderReset = () => (
@@ -169,25 +190,21 @@ const SignInScreen = ({navigation}) => {
     const renderLogin = () => {
       if(search.userInfo && search.userInfo.id){
         return (
-          <View>
-            <Text style={[styles.text_footer, {
-              color: colors.text,
-              marginTop: 10}]}>
-              Senha
+          <View style={{marginTop:20}}>
+            <Text style={styles.text_footer}>
+              Informe sua senha para continuar:
             </Text>
             <View style={styles.action}>
                 <Feather 
                     name="lock"
-                    color={colors.text}
+                    color={Colors.TEXT}
                     size={20}
                 />
                 <TextInput 
                     placeholder="Senha de acesso"
                     placeholderTextColor={Colors.PLACEHOLDER}
                     secureTextEntry={data.secureTextEntry ? true : false}
-                    style={[styles.textInput, {
-                        color: colors.text
-                    }]}
+                    style={styles.textInput}
                     autoCapitalize="none"
                     onChangeText={(val) => handlePasswordChange(val)}
                 />
@@ -213,7 +230,6 @@ const SignInScreen = ({navigation}) => {
             <Text style={styles.errorMsg}>Sua senha deve ter 6 dígitos.</Text>
             </Animatable.View>
             }
-
             <TouchableOpacity>
                 <Text style={{color: Colors.LINK_TOUCH, marginTop:15}}>Esqueceu a senha?</Text>
             </TouchableOpacity>
@@ -225,8 +241,11 @@ const SignInScreen = ({navigation}) => {
       }
       if (search.userInfo && !search.userInfo.id){
         return (
-          <View style={styles.button}>
-            <ClearButton text='Cadastre-se' onPress={() => navigation.navigate('SignUpScreen')} />
+          <View>
+            <AlertView message={`Localizamos o seu CRM, porém você ainda não possui cadastro no Prontow. \n\nCadastre agora:`} />
+            <View style={styles.button}>
+              <LinearButton text='Cadastre-se' onPress={() => navigation.navigate('SignUpScreen')} />
+            </View>
           </View>
         )
       }
@@ -235,6 +254,7 @@ const SignInScreen = ({navigation}) => {
     const renderInit = () => (
       !search.userInfo &&
       <View>
+        <AlertView message={search.error} />
         <View style={{...styles.button}, {marginTop: 50} } >
           <LinearButton text='Buscar' textLoading="Buscando..." on={search.searching} styles={{marginTop: 0}} onPress={findCrm} />
         </View>
@@ -267,48 +287,71 @@ const SignInScreen = ({navigation}) => {
         </View>
         <Animatable.View 
             animation="fadeInUpBig"
-            style={[styles.footer, {
-                backgroundColor: colors.background
-            }]}>
+            style={styles.footer}>
+            
 
-            <Text style={[styles.text_footer, {
-                color: colors.text
-            }]}>Informe a UF e número do CRM:</Text>
-            <View style={styles.action}>
-              <FontAwesome 
-                    name="user-o"
-                    color={Colors.ICON_GREEN}
-                    size={20}
-                />
-              { renderSelectUF() }
-              
-              <TextInput 
-                    placeholder="Número do CRM"
-                    placeholderTextColor={Colors.PLACEHOLDER}
-                    style={[styles.textInput, {
-                        color: colors.text
-                    }]}
-                    editable={!search.userInfo}
-                    keyboardType='numeric'
-                    autoCapitalize="none"
-                    value={data.crm}
-                    onChangeText={(val) => handleInputCrm(val) }
-                />
+            {search.userInfo &&
 
-              {data.isValidCRM &&
-                <Animatable.View
-                  animation="bounceIn">
-                    <Feather 
-                      name="check-circle"
+              <View>
+                <View style={styles.action}>
+                  <FontAwesome 
+                      name="user-o"
                       color={Colors.ICON_GREEN}
-                      size={20}
-                  />
-                </Animatable.View>
-              }
+                      size={20} />
+                  <Text style={[styles.text_footer, {flex: 1, marginLeft: 10}]}>
+                    {search.userInfo.name}
+                  </Text>  
+                  <Animatable.View
+                    animation="bounceIn">
+                      <Feather 
+                        name="check-circle"
+                        color={Colors.ICON_GREEN}
+                        size={20}
+                    />
+                  </Animatable.View>
+                </View>
+                <View style={styles.action}>
+                    <Text style={[styles.text_footer, {marginLeft: 28}]}>
+                      <Text style={{fontWeight: 'bold'}}>CRM:{' '}</Text>
+                      {search.userInfo.uf}-{search.userInfo.crm}
+                    </Text>  
+                </View>
+              </View>
+                
+            }
 
-            </View>
+            {!search.userInfo &&
+              <View>
+                <Text style={styles.text_footer}>Informe a UF e o número do CRM:</Text>
+                <View style={styles.action}>
+                  <FontAwesome 
+                        name="user-o"
+                        color={Colors.ICON_GREEN}
+                        size={20}
+                    />
+                  { renderSelectUF() }
+                  
+                  <TextInput 
+                      placeholder="Número do CRM"
+                      placeholderTextColor={Colors.PLACEHOLDER}
+                      style={styles.textInput}
+                      keyboardType='numeric'
+                      autoCapitalize="none"
+                      value={data.crm}
+                      onChangeText={(val) => handleInputCrm(val) }/>
+                  {data.isValidCRM &&
+                    <Animatable.View
+                      animation="bounceIn">
+                        <Feather 
+                          name="check-circle"
+                          color={Colors.ICON_GREEN}
+                          size={20} />
+                    </Animatable.View>
+                  }
+                </View>
+              </View>
+            }
 
-            <AlertView error={search.error} message={search.message} />
             { renderInit() }
             { renderLogin() }
             { renderReset()}
@@ -350,7 +393,7 @@ const styles = StyleSheet.create({
     },
     action: {
         flexDirection: 'row',
-        marginTop: 10,
+        marginTop: 5,
         borderBottomWidth: 1,
         borderBottomColor: Colors.BTN_BORDER_ACTION,
         paddingBottom: 5

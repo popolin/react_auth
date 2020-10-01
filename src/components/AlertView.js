@@ -8,7 +8,7 @@ export default function AlertView(props) {
     {...{fontWeight: 'bold'}, ...styles.messageError} : 
     {...{fontWeight: 'bold'}, ...styles.messageInfo };
   return(
-    props.message.trim().length > 0 &&
+    (props.message != null && props.message.trim().length > 0) &&
     <View style={props.error ? styles.alertError : styles.alertInfo}>
       <Text style={props.error ? styles.messageError : styles.messageInfo}>{props.message}</Text>
     </View>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { 
     View, 
     Text, 
@@ -6,68 +6,73 @@ import {
     Dimensions,
     StyleSheet,
     StatusBar,
-    Image
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import LinearGradient from 'react-native-linear-gradient';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { useTheme } from '@react-navigation/native';
 
+import {recoverStore, USER} from '../util/Storages'
 import Colors from '../config/colors.json'
 
-const SplashScreen = ({navigation}) => {
-    const { colors } = useTheme();
 
-    return (
-      <View style={styles.container}>
-          <StatusBar backgroundColor={Colors.BACKGROUND_SEC} barStyle="light-content"/>
-        <View style={styles.header}>
-            <Animatable.Image 
-                animation="bounceIn"
-                duraton="1500"
-            source={require('../assets/logo.png')}
-            style={styles.logo}
-            resizeMode="stretch"
-            />
-            <Animatable.Image 
-                animation="bounceIn"
-                duraton="1500"
-            source={require('../assets/prontow.png')}
-            style={styles.prontow}
-            resizeMode="stretch"
-            />
-        </View>
-        <Animatable.View 
-            style={[styles.footer, {
-                backgroundColor: colors.background
-            }]}
-            animation="fadeInUpBig" >
-            <Text style={[styles.title, {
-                color: colors.text
-            }]}>Conecte-se com seus pacientes!</Text>
-            <Text style={styles.terms}>
-              Ao logar você estará concordando{'\n'}com os 
-              <Text onPress={() =>navigation.navigate('TermsScreen')} style={styles.termosButtonText}>
-                &nbsp;termos de uso
-              </Text> 
-            </Text>
-            <View style={styles.button}>
-            <TouchableOpacity onPress={()=>navigation.navigate('SignInScreen')}>
-                <LinearGradient
-                    colors={Colors.BTN_MAIN_LINEAR}
-                    style={styles.signIn}>
-                    <Text style={styles.textSign}>Logue com o CRM</Text>
-                    <MaterialIcons 
-                        name="navigate-next"
-                        color={Colors.BTN_MAIN_TEXT}
-                        size={20}
-                    />
-                </LinearGradient>
-            </TouchableOpacity>
-            </View>
-        </Animatable.View>
+const SplashScreen = ({navigation}) => {
+
+  const [data, setData] = useState({
+    looked: false,
+    user: null,
+  });
+
+  useEffect(() => {
+    if(!data.looked){
+      recoverStore(USER, user => {
+        setData({ looked: true, user });
+      });
+    }
+  }, []);
+
+  return (
+    <View style={styles.container}>
+        <StatusBar backgroundColor={Colors.BACKGROUND_SEC} barStyle="light-content"/>
+      <View style={styles.header}>
+          <Animatable.Image 
+              animation="bounceIn"
+              duraton="1500"
+          source={require('../assets/logo.png')}
+          style={styles.logo}
+          resizeMode="stretch"
+          />
+          <Animatable.Image 
+              animation="bounceIn"
+              duraton="1500"
+          source={require('../assets/prontow.png')}
+          style={styles.prontow}
+          resizeMode="stretch"
+          />
       </View>
-    );
+      <Animatable.View 
+          style={styles.footer}
+          animation="fadeInUpBig" >
+          <Text style={styles.title}>Conecte-se com seus pacientes!</Text>
+          <Text style={styles.description}>
+            Agenda Médica, Confirmação de Atendimentos via SMS, Guia TISS, Nota Fiscal Eletrônica, Avaliação de Atendimento, Prontuário Eletrônico e Tele-Medicina.
+          </Text>
+          <View style={styles.button}>
+          <TouchableOpacity onPress={() => navigation.navigate('SignInScreen', {user: data.user})}>
+              <LinearGradient
+                  colors={Colors.BTN_MAIN_LINEAR}
+                  style={styles.signIn}>
+                  <Text style={styles.textSign}>Logue com seu CRM</Text>
+                  <MaterialIcons 
+                      name="navigate-next"
+                      color={Colors.BTN_MAIN_TEXT}
+                      size={20}
+                  />
+              </LinearGradient>
+          </TouchableOpacity>
+          </View>
+      </Animatable.View>
+    </View>
+  );
 };
 
 export default SplashScreen;
@@ -92,7 +97,8 @@ const styles = StyleSheet.create({
       backgroundColor: Colors.BACKGROUND_MAIN,
       borderTopLeftRadius: 30,
       borderTopRightRadius: 30,
-      paddingVertical: 50,
+      paddingTop: 40,
+      paddingBottom: 70,
       paddingHorizontal: 30
   },
   logo: {
@@ -106,24 +112,30 @@ const styles = StyleSheet.create({
   },
   title: {
       color: Colors.TITLE_MAIN,
-      fontSize: 30,
-      fontWeight: 'bold'
+      fontFamily: 'Roboto,sans-serif',
+      fontSize: 26,
+      letterSpacing: 3,
+      textTransform: 'uppercase',
+      fontWeight: '700'
   },
   text: {
       color: Colors.TEXT,
       marginTop:5
   },
-  terms: {
-    fontSize:14,
+  description: {
+    fontSize:16,
     color: 'grey',
-    marginTop:5
+    marginTop: 5,
+    fontStyle: 'italic',
+    position: 'relative',
+    textAlign: 'left',
   },
   button: {
       alignItems: 'flex-end',
       marginTop: 30
   },
   signIn: {
-      width: 170,
+      width: 180,
       height: 40,
       justifyContent: 'center',
       alignItems: 'center',
@@ -135,12 +147,5 @@ const styles = StyleSheet.create({
       fontWeight: 'bold'
   },
   
-  termosButtonText: {
-    fontSize:14,
-    fontWeight: 'bold',
-    color: 'grey',
-    marginStart: 4,
-    marginTop: 0,
-  }
 });
 
