@@ -26,7 +26,7 @@ import Permissions from '../util/Permissions';
 import Api from '../services/Api'
 import Colors from '../config/colors.json'
 
-import {asyncStore, removeStore, USER} from '../util/Storages'
+import {asyncStore, recoverStore, USER} from '../util/Storages'
 
 const SignInScreen = ({navigation, route}) => {
 
@@ -40,6 +40,7 @@ const SignInScreen = ({navigation, route}) => {
       password: '',
       uf: '',
       ufs: [],
+      logging: false,
       secureTextEntry: true,
       isValidCRM: false,
       isValidPassword: true
@@ -65,9 +66,11 @@ const SignInScreen = ({navigation, route}) => {
     };
 
     useEffect(() => {
-      const { user } = route.params;
-      configUser(user);
-
+      
+      recoverStore(USER, user => {
+        configUser(user);
+      });
+      
       if(data.ufs.length === 0){
         setData(prevState => ({ ...prevState, ufs: Locations.ufs() }));
         Permissions.executeWithGeolocation(localizacaoLiberada);
@@ -139,7 +142,6 @@ const SignInScreen = ({navigation, route}) => {
         const resultadoSearch = {
           userInfo,
           searched: true,
-          searching: false,
           title: `Olá, ${userInfo.name}!`
         }
         setSearch(resultadoSearch);
@@ -177,7 +179,6 @@ const SignInScreen = ({navigation, route}) => {
     const resetForm = () => {
       clearData();
       clearSearch();
-      removeStore(USER);
     }
 
     const renderReset = () => (
@@ -234,7 +235,7 @@ const SignInScreen = ({navigation, route}) => {
                 <Text style={{color: Colors.LINK_TOUCH, marginTop:15}}>Esqueceu a senha?</Text>
             </TouchableOpacity>
             <View style={styles.button}>
-              <LinearButton text='Login' onPress={() => loginHandle( data.crm, data.password )} />
+              <LinearButton on={data.logging} text='Login' onPress={() => loginHandle( data.password )} />
             </View>
           </View>
         )
@@ -244,7 +245,7 @@ const SignInScreen = ({navigation, route}) => {
           <View>
             <AlertView message={`Localizamos o seu CRM, porém você ainda não possui cadastro no Prontow. \n\nCadastre agora:`} />
             <View style={styles.button}>
-              <LinearButton text='Cadastre-se' onPress={() => navigation.navigate('SignUpScreen')} />
+              <LinearButton text='Cadastrar' onPress={() => navigation.navigate('SignUpScreen')} />
             </View>
           </View>
         )
@@ -261,21 +262,21 @@ const SignInScreen = ({navigation, route}) => {
       </View>
     )
     
-    const loginHandle = (uf, crm, password) => {
-      if ( uf.length == 0 || crm.length == 0 || password.length == 0 ) {
-        Alert.alert('Ops!', 'Os campos UF, CRM e Senha não podem ficar em branco.', [
+    const loginHandle = (password) => {
+      if ( password.length == 0 ) {
+        Alert.alert('Ops!', 'Informe sua senha para continuar', [
             {text: 'Okay'}
         ]);
         return;
       }
 
-      if ( foundUser.length == 0 ) {
-          Alert.alert('Usuário inválido!', 'UF/CRM ou senha incorretos.', [
-              {text: 'Okay'}
-          ]);
-          return;
-      }
-      signIn(foundUser);
+      setData({...data, logging: true});
+      setTimeout(async() => {
+        const foundUser = Users.filter( item => {
+          return data.crm == item.crm && data.uf == item.uf && password == item.password;
+        });
+        signIn(foundUser);
+      }, 2000);
     }
 
     return (

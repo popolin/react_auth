@@ -28,6 +28,7 @@ const SplashScreen = ({navigation}) => {
         setData({ looked: true, user });
       });
     }
+
   }, []);
 
   return (
@@ -52,16 +53,36 @@ const SplashScreen = ({navigation}) => {
       <Animatable.View 
           style={styles.footer}
           animation="fadeInUpBig" >
-          <Text style={styles.title}>Conecte-se com seus pacientes!</Text>
-          <Text style={styles.description}>
-            Agenda Médica, Confirmação de Atendimentos via SMS, Guia TISS, Nota Fiscal Eletrônica, Avaliação de Atendimento, Prontuário Eletrônico e Tele-Medicina.
-          </Text>
+          {
+           !data.user &&
+           <>
+              <Text style={styles.title}>
+                Conecte-se com seus pacientes!
+              </Text>
+              <Text style={styles.description}>
+                Agenda Médica, Confirmação de Atendimentos via SMS, Guia TISS, Nota Fiscal Eletrônica, Avaliação de Atendimento, Prontuário Eletrônico e Tele-Medicina.
+              </Text>
+            </>
+          }
+          {
+           data.user &&
+           <>
+              <Text style={styles.title}>
+                Olá, {data.user.name}!
+              </Text>
+              <Text style={styles.description}>
+                Bem vindo de volta!{`\n`}Em caso de dúvidas ou problemas, entre em contato conosco.
+              </Text>
+            </>
+          }
+          
+          
           <View style={styles.button}>
-          <TouchableOpacity onPress={() => navigation.navigate('SignInScreen', {user: data.user})}>
+          <TouchableOpacity onPress={() => navigation.navigate('SignInScreen')}>
               <LinearGradient
                   colors={Colors.BTN_MAIN_LINEAR}
                   style={styles.signIn}>
-                  <Text style={styles.textSign}>Logue com seu CRM</Text>
+                  <Text style={styles.textSign}>{data.user ? 'Continuar' : 'Logue com seu CRM'}</Text>
                   <MaterialIcons 
                       name="navigate-next"
                       color={Colors.BTN_MAIN_TEXT}
