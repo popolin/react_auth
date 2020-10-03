@@ -24,7 +24,6 @@ import {useAuth} from '../../context/auth';
 export function DrawerContent(props) {
 
     const {user, signOut} = useAuth();
-    
 
     return(
         <View style={{flex:1}}>
@@ -88,7 +87,7 @@ export function DrawerContent(props) {
                                 />
                             )}
                             label="Agenda"
-                            onPress={() => {props.navigation.navigate('Profile')}}
+                            onPress={() => {props.navigation.navigate('CalendarScreen')}}
                         />
                         <DrawerItem 
                             icon={({color, size}) => (
@@ -101,28 +100,6 @@ export function DrawerContent(props) {
                             label="Bookmarks"
                             onPress={() => {props.navigation.navigate('BookmarkScreen')}}
                         />
-                        {/* <DrawerItem 
-                            icon={({color, size}) => (
-                                <Icon 
-                                name="settings-outline" 
-                                color={color}
-                                size={size}
-                                />
-                            )}
-                            label="Settings"
-                            onPress={() => {props.navigation.navigate('SettingsScreen')}}
-                        />
-                        <DrawerItem 
-                            icon={({color, size}) => (
-                                <Icon 
-                                name="account-check-outline" 
-                                color={color}
-                                size={size}
-                                />
-                            )}
-                            label="Support"
-                            onPress={() => {props.navigation.navigate('SupportScreen')}}
-                        /> */}
                     </Drawer.Section>
                     <Drawer.Section title="Preferences">
                         <TouchableRipple >

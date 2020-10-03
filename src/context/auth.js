@@ -1,18 +1,14 @@
 import React, {createContext, useState, useEffect, useContext} from 'react';
-
+import { View, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 
 import { createDrawerNavigator } from '@react-navigation/drawer';
 const Drawer = createDrawerNavigator();
 
 import RootStackScreen from '../pages/root/RootStackScreen';
-import DrawerContent from '../pages/home/DrawerContent'; 
-import {
-  SupportScreen,
-  BookmarkScreen,
-  SettingsScreen,
-  MainTabScreen
-} from '../pages/home/'; 
+import {DrawerContent} from '../pages/home/DrawerContent';
+import BookmarkScreen from '../pages/home/BookmarkScreen';
+import MainTabScreen from '../pages/home/MainTabScreen';
 
 import * as auth from '../services/Auth';
 import Storage, {
@@ -35,8 +31,8 @@ const AuthProvider = ({children}) => {
       const storagedUser = await Storage.getItemJson(AUTH_USER);
       const storagedToken = await Storage.getItem(AUTH_TOKEN);
 
-      console.log("Auth:useEffect", storagedUser);
-
+      console.log(storagedUser);
+      console.log(storagedToken);
       if (storagedUser && storagedToken) {
         setUser(storagedUser);
         api.defaults.headers.Authorization = `Baerer ${storagedToken}`;
@@ -82,16 +78,22 @@ const AuthProvider = ({children}) => {
     setUser(null);
   }
 
+  if( loading ) {
+    return(
+      <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+        <ActivityIndicator size="large"/>
+      </View>
+    );
+  }
+
   return (
     <AuthContext.Provider
-      value={{signed: !!user, user, preForm, loading, preSignIn, signIn, signOut}}>
+      value={{signed: !!user, user, preForm, preSignIn, signIn, signOut}}>
       {children}
       <NavigationContainer>
           { !!user ? (
             <Drawer.Navigator drawerContent={props => <DrawerContent {...props} />}>
               <Drawer.Screen name="HomeDrawer" component={MainTabScreen} />
-              <Drawer.Screen name="SupportScreen" component={SupportScreen} />
-              <Drawer.Screen name="SettingsScreen" component={SettingsScreen} />
               <Drawer.Screen name="BookmarkScreen" component={BookmarkScreen} />
             </Drawer.Navigator>
           )

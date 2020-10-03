@@ -5,12 +5,11 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 
-import {
-  HomeScreen,
-  DetailsScreen,
-  ExploreScreen,
-  ProfileScreen,
-} from './';
+import HomeScreen from './HomeScreen';
+import DetailsScreen from './DetailsScreen';
+import CalendarScreen from './CalendarScreen';
+import ProfileScreen from './ProfileScreen';
+
 
 const HomeStack = createStackNavigator();
 const DetailsStack = createStackNavigator();
@@ -34,7 +33,7 @@ const MainTabScreen = () => (
         }}
       />
       <Tab.Screen
-        name="Notifications"
+        name="Details"
         component={DetailsStackScreen}
         options={{
           tabBarLabel: 'Updates',
@@ -56,13 +55,13 @@ const MainTabScreen = () => (
         }}
       />
       <Tab.Screen
-        name="Explore"
-        component={ExploreScreen}
+        name="Calendar"
+        component={CalendarScreen}
         options={{
-          tabBarLabel: 'Explore',
+          tabBarLabel: 'Calendar',
           tabBarColor: '#d02860',
           tabBarIcon: ({ color }) => (
-            <Icon name="ios-aperture" color={color} size={26} />
+            <Icon name="calendar-outline" color={color} size={26} />
           ),
         }}
       />
