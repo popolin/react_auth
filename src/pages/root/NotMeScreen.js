@@ -55,12 +55,16 @@ const NotMeScreen = ({navigation}) => {
     const handleChoosePhoto = () => {
       console.log('handleChoosePhoto')
       const options = {
-        noData: true,
+        title: 'Selecione a imagem',
+        storageOptions: {
+          skipBackup: true,
+          path: 'images',
+        },
       };
       ImagePicker.launchImageLibrary(options, response => {
         console.log(response);
         if (response.uri) {
-          setData({ selfie: response });
+          setData({ ...data, anexo: response });
         }
       });
     };
@@ -177,7 +181,21 @@ const NotMeScreen = ({navigation}) => {
             <TextErrorView message={data.checkSelfie} />
             {
               data.anexo &&
-              <Text>ANEXOU</Text>
+              <View>
+                <Image
+                  source={{
+                    uri: 'data:image/jpeg;base64,' + data.anexo.resourcePath.data,
+                  }}
+                  style={{ width: 100, height: 100 }}
+                />
+                <Image
+                  source={{ uri: data.anexo.resourcePath.uri }}
+                  style={{ width: 200, height: 200 }}
+                />
+                <Text style={{ alignItems: 'center' }}>
+                  {data.anexo.uri}
+                </Text>
+              </View>
             }
 
             <View style={styles.button}>
