@@ -1,16 +1,6 @@
 import React from 'react';
 
-// import {useTheme} from '../../node_modules/react-native-paper/lib/commonjs/core/theming'
-// import {Avatar} from '../../node_modules/react-native-paper/lib/module/components/Avatar/Avatar'
-// import Title from '../../node_modules/react-native-paper/lib/commonjs/components/Typography/Title'
-// import Caption from '../../node_modules/react-native-paper/lib/commonjs/components/Typography/Caption'
-// import Paragraph from '../../node_modules/react-native-paper/lib/commonjs/components/Typography/Paragraph'
-// import Drawer from '../../node_modules/react-native-paper/lib/commonjs/components/Drawer/Drawer'
-// import Text from '../../node_modules/react-native-paper/lib/commonjs/components/Typography/Text'
-// import TouchableRipple from '../../node_modules/react-native-paper/lib/commonjs/components/TouchableRipple/TouchableRipple'
-// import Switch from '../../node_modules/react-native-paper/lib/commonjs/components/Switch'
 import {
-  useTheme,
   Avatar,
   Title,
   Caption,
@@ -29,13 +19,12 @@ import {
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import{ AuthContext } from '../components/context';
+import {useAuth} from '../../context/auth';
 
 export function DrawerContent(props) {
 
-    const paperTheme = useTheme();
-
-    const { signOut, toggleTheme } = React.useContext(AuthContext);
+    const {user, signOut} = useAuth();
+    
 
     return(
         <View style={{flex:1}}>
@@ -50,8 +39,8 @@ export function DrawerContent(props) {
                                 size={50}
                             />
                             <View style={{marginLeft:15, flexDirection:'column'}}>
-                                <Title style={styles.title}>John Doe</Title>
-                                <Caption style={styles.caption}>@j_doe</Caption>
+                                <Title style={styles.title}>{user.name}</Title>
+                                <Caption style={styles.caption}>{user.uf}-{user.crm}</Caption>
                             </View>
                         </View>
 
@@ -87,10 +76,21 @@ export function DrawerContent(props) {
                                 size={size}
                                 />
                             )}
-                            label="Profile"
+                            label="Conta"
                             onPress={() => {props.navigation.navigate('Profile')}}
                         />
-                        {/* <DrawerItem 
+                        <DrawerItem 
+                            icon={({color, size}) => (
+                                <Icon 
+                                name="calendar-clock" 
+                                color={color}
+                                size={size}
+                                />
+                            )}
+                            label="Agenda"
+                            onPress={() => {props.navigation.navigate('Profile')}}
+                        />
+                        <DrawerItem 
                             icon={({color, size}) => (
                                 <Icon 
                                 name="bookmark-outline" 
@@ -100,7 +100,7 @@ export function DrawerContent(props) {
                             )}
                             label="Bookmarks"
                             onPress={() => {props.navigation.navigate('BookmarkScreen')}}
-                        /> */}
+                        />
                         {/* <DrawerItem 
                             icon={({color, size}) => (
                                 <Icon 
@@ -111,8 +111,8 @@ export function DrawerContent(props) {
                             )}
                             label="Settings"
                             onPress={() => {props.navigation.navigate('SettingsScreen')}}
-                        /> */}
-                        {/* <DrawerItem 
+                        />
+                        <DrawerItem 
                             icon={({color, size}) => (
                                 <Icon 
                                 name="account-check-outline" 
@@ -125,11 +125,11 @@ export function DrawerContent(props) {
                         /> */}
                     </Drawer.Section>
                     <Drawer.Section title="Preferences">
-                        <TouchableRipple onPress={() => {toggleTheme()}}>
+                        <TouchableRipple >
                             <View style={styles.preference}>
-                                <Text>Dark Theme</Text>
+                                <Text>Manter Logado</Text>
                                 <View pointerEvents="none">
-                                    <Switch value={paperTheme.dark}/>
+                                    <Switch value="false" />
                                 </View>
                             </View>
                         </TouchableRipple>
@@ -145,7 +145,7 @@ export function DrawerContent(props) {
                         size={size}
                         />
                     )}
-                    label="Sign Out"
+                    label="Sair"
                     onPress={() => {signOut()}}
                 />
             </Drawer.Section>
@@ -166,8 +166,9 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
     },
     caption: {
-      fontSize: 14,
+      fontSize: 12,
       lineHeight: 14,
+      fontWeight:'bold'
     },
     row: {
       marginTop: 20,

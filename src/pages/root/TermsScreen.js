@@ -1,7 +1,7 @@
 import React from 'react';
 import {WebView} from 'react-native-webview';
 
-import Loading from '../../src/components/Loading'
+import Loading from '../../components/Loading'
 
 
 const TermsScreen = ({navigation}) => {

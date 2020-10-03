@@ -11,25 +11,13 @@ import * as Animatable from 'react-native-animatable';
 import LinearGradient from 'react-native-linear-gradient';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import {recoverStore, USER} from '../util/Storages'
-import Colors from '../config/colors.json'
+import Colors from '../../config/colors.json'
 
+import {useAuth} from '../../context/auth';
 
 const SplashScreen = ({navigation}) => {
 
-  const [data, setData] = useState({
-    looked: false,
-    user: null,
-  });
-
-  useEffect(() => {
-    if(!data.looked){
-      recoverStore(USER, user => {
-        setData({ looked: true, user });
-      });
-    }
-
-  }, []);
+  const {preForm, signOut} = useAuth();
 
   return (
     <View style={styles.container}>
@@ -38,14 +26,14 @@ const SplashScreen = ({navigation}) => {
           <Animatable.Image 
               animation="bounceIn"
               duraton="1500"
-          source={require('../assets/logo.png')}
+          source={require('../../assets/logo.png')}
           style={styles.logo}
           resizeMode="stretch"
           />
           <Animatable.Image 
               animation="bounceIn"
               duraton="1500"
-          source={require('../assets/prontow.png')}
+          source={require('../../assets/prontow.png')}
           style={styles.prontow}
           resizeMode="stretch"
           />
@@ -54,7 +42,18 @@ const SplashScreen = ({navigation}) => {
           style={styles.footer}
           animation="fadeInUpBig" >
           {
-           !data.user &&
+           preForm &&
+           <>
+              <Text style={styles.title}>
+                Olá, {preForm.name}!
+              </Text>
+              <Text style={styles.description}>
+                Bem vindo de volta!{`\n`}Em caso de dúvidas ou problemas, entre em contato conosco.
+              </Text>
+            </>
+          }
+          {
+           !preForm &&
            <>
               <Text style={styles.title}>
                 Conecte-se com seus pacientes!
@@ -64,33 +63,29 @@ const SplashScreen = ({navigation}) => {
               </Text>
             </>
           }
-          {
-           data.user &&
-           <>
-              <Text style={styles.title}>
-                Olá, {data.user.name}!
-              </Text>
-              <Text style={styles.description}>
-                Bem vindo de volta!{`\n`}Em caso de dúvidas ou problemas, entre em contato conosco.
-              </Text>
-            </>
-          }
-          
           
           <View style={styles.button}>
-          <TouchableOpacity onPress={() => navigation.navigate('SignInScreen')}>
-              <LinearGradient
-                  colors={Colors.BTN_MAIN_LINEAR}
-                  style={styles.signIn}>
-                  <Text style={styles.textSign}>{data.user ? 'Continuar' : 'Logue com seu CRM'}</Text>
-                  <MaterialIcons 
-                      name="navigate-next"
-                      color={Colors.BTN_MAIN_TEXT}
-                      size={20}
-                  />
-              </LinearGradient>
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('SignInScreen')}>
+                <LinearGradient
+                    colors={Colors.BTN_MAIN_LINEAR}
+                    style={styles.signIn}>
+                    <Text style={styles.textSign}>{preForm ? 'Continuar' : 'Logue com seu CRM'}</Text>
+                    <MaterialIcons 
+                        name="navigate-next"
+                        color={Colors.BTN_MAIN_TEXT}
+                        size={20}
+                    />
+                </LinearGradient>
+            </TouchableOpacity>
           </View>
+          {
+            preForm &&
+            <View style={[styles.textPrivate, {marginTop: 20}]}>
+                <Text style={styles.color_textPrivate} onPress={signOut}>
+                    Você não é <Text style={[styles.color_textPrivate, {fontWeight: 'bold'}]}>{preForm.name}</Text>?
+                </Text>
+            </View>
+          }
       </Animatable.View>
     </View>
   );
@@ -167,6 +162,14 @@ const styles = StyleSheet.create({
       color: Colors.BTN_MAIN_TEXT,
       fontWeight: 'bold'
   },
+  textPrivate: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 20
+  },
+  color_textPrivate: {
+      color: Colors.TEXT
+  }
   
 });
 

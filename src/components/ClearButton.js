@@ -14,7 +14,7 @@ export default function LinearButton(props) {
             borderWidth: 1,
             marginTop: 15
         }]} >
-        <Text style={[styles.textSign, {
+        <Text style={[styles.linearButtonText, {
             color: Colors.BTN_CLEAR
         }]}>{props.text}</Text>
     </TouchableOpacity>

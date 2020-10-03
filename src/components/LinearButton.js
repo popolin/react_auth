@@ -8,7 +8,7 @@ import FontAwesomeSpin from './FontAwesomeSpin'
 
 export default function LinearButton(props) {
 
-  const {onPress} = props;
+  // const {onPress} = props;
   const estilos = {...props.styles, ...styles.linearButtonTouch};
   const handlePress = params => {
     props.onPress(params);

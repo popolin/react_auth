@@ -2,60 +2,85 @@ import React from 'react';
 import { 
     View, 
     Text, 
-    Button, 
     TouchableOpacity, 
-    Dimensions,
     TextInput,
     Platform,
     StyleSheet,
     ScrollView,
-    StatusBar
+    StatusBar,
+    Alert
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
-import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
-import Colors from '../config/colors.json'
+import Colors from '../../config/colors.json'
 
-const SignInScreen = ({navigation}) => {
+import {validate} from "../../util/Validation"
+
+import {signUp} from '../../services/Auth';
+import {useAuth} from '../../context/auth';
+
+import {LinearButton, ClearButton} from '../../components/'
+import TextErrorView from '../../components/TextErrorView';
+
+const SignUpScreen = ({navigation}) => {
+
+    const {preForm} = useAuth();
 
     const [data, setData] = React.useState({
-        username: '',
+        email: '',
         password: '',
-        confirm_password: '',
-        check_textInputChange: false,
-        secureTextEntry: true,
-        confirm_secureTextEntry: true,
+        signingUp: false,
+        checkEmail: null,
+        isValidPassword: null,
+        secureTextEntry: true
     });
 
-    const textInputChange = (val) => {
-        if( val.length !== 0 ) {
-            setData({
-                ...data,
-                username: val,
-                check_textInputChange: true
-            });
-        } else {
-            setData({
-                ...data,
-                username: val,
-                check_textInputChange: false
-            });
-        }
+    const handleEmailChange = (val) => {
+      const checkEmail = validate("email", val);
+      setData({
+        ...data,
+        email: val,
+        checkEmail
+      });
     }
 
     const handlePasswordChange = (val) => {
-        setData({
-            ...data,
-            password: val
-        });
+      const isValidPassword = validate("password", val);
+      setData({
+        ...data,
+        password: val,
+        isValidPassword
+      });
     }
 
-    const handleConfirmPasswordChange = (val) => {
-        setData({
-            ...data,
-            confirm_password: val
-        });
+    const validateEmail = () => {
+      return !validate(
+        "email", data.email, 
+        (error) => setData( prevState => ({...prevState, checkEmail: error})));
+    }
+
+    const validatePassword = () => {
+      return !validate(
+        "password", data.password, 
+        (error) => setData( prevState => ({...prevState, isValidPassword: error})));
+    }
+
+    const handleSignUp = async() => {
+      const emailOK = validateEmail();
+      const passwordOK = validatePassword();
+      if(emailOK && passwordOK){
+        setData({...data, signingUp: true});
+        const {password} = data;
+        const response = await signUp({...preForm, ...{password}});
+        setData({...data, signingUp: false});
+        if(response.error){
+          Alert.alert('Ops!', response.error, [
+            {text: 'Okay'}
+          ]);
+          return;
+        } 
+      }
     }
 
     const updateSecureTextEntry = () => {
@@ -65,14 +90,6 @@ const SignInScreen = ({navigation}) => {
         });
     }
 
-    const updateConfirmSecureTextEntry = () => {
-        setData({
-            ...data,
-            confirm_secureTextEntry: !data.confirm_secureTextEntry
-        });
-    }
-
-    
     return (
       <View style={styles.container}>
           <StatusBar backgroundColor='#009387' barStyle="light-content"/>
@@ -82,10 +99,9 @@ const SignInScreen = ({navigation}) => {
         </View>
         <Animatable.View 
             animation="fadeInUpBig"
-            style={styles.footer}
-        >
+            style={styles.footer}>
             <ScrollView>
-            <Text style={styles.text_footer}>Email</Text>
+            <Text style={[styles.text_footer, {marginTop: 0}]}>Email</Text>
             <View style={styles.action}>
                 <FontAwesome 
                     name="envelope-o"
@@ -96,12 +112,11 @@ const SignInScreen = ({navigation}) => {
                     placeholder="Seu email"
                     style={styles.textInput}
                     autoCapitalize="none"
-                    onChangeText={(val) => textInputChange(val)}
+                    onChangeText={(val) => handleEmailChange(val)}
                 />
-                {data.check_textInputChange ? 
+                {!data.checkEmail ? 
                 <Animatable.View
-                    animation="bounceIn"
-                >
+                    animation="bounceIn">
                     <Feather 
                         name="check-circle"
                         color="green"
@@ -110,10 +125,9 @@ const SignInScreen = ({navigation}) => {
                 </Animatable.View>
                 : null}
             </View>
+            <TextErrorView message={data.checkEmail} />
 
-            <Text style={[styles.text_footer, {
-                marginTop: 35
-            }]}>Senha</Text>
+            <Text style={styles.text_footer}>Senha</Text>
             <View style={styles.action}>
                 <Feather 
                     name="lock"
@@ -121,7 +135,7 @@ const SignInScreen = ({navigation}) => {
                     size={20}
                 />
                 <TextInput 
-                    placeholder="Sua senha"
+                    placeholder="Sua senha de acesso"
                     secureTextEntry={data.secureTextEntry ? true : false}
                     style={styles.textInput}
                     autoCapitalize="none"
@@ -146,40 +160,7 @@ const SignInScreen = ({navigation}) => {
                 </TouchableOpacity>
             </View>
 
-            <Text style={[styles.text_footer, {
-                marginTop: 35
-            }]}>Confirme a senha</Text>
-            <View style={styles.action}>
-                <Feather 
-                    name="lock"
-                    color="#05375a"
-                    size={20}
-                />
-                <TextInput 
-                    placeholder="Digite novamente a senha"
-                    secureTextEntry={data.confirm_secureTextEntry ? true : false}
-                    style={styles.textInput}
-                    autoCapitalize="none"
-                    onChangeText={(val) => handleConfirmPasswordChange(val)}
-                />
-                <TouchableOpacity
-                    onPress={updateConfirmSecureTextEntry}
-                >
-                    {data.secureTextEntry ? 
-                    <Feather 
-                        name="eye-off"
-                        color="grey"
-                        size={20}
-                    />
-                    :
-                    <Feather 
-                        name="eye"
-                        color="grey"
-                        size={20}
-                    />
-                    }
-                </TouchableOpacity>
-            </View>
+            <TextErrorView message={data.isValidPassword} />
             <View style={styles.textPrivate}>
                 <Text style={styles.color_textPrivate}>
                     Clicando no botão abaixo você estará aceitando os 
@@ -188,32 +169,8 @@ const SignInScreen = ({navigation}) => {
                 <Text style={styles.color_textPrivate}>{" "}do Prontow.</Text>
             </View>
             <View style={styles.button}>
-                <TouchableOpacity
-                    style={styles.signIn}
-                    onPress={() => {}}
-                >
-                <LinearGradient
-                    colors={['#08d4c4', '#01ab9d']}
-                    style={styles.signIn}
-                >
-                    <Text style={[styles.textSign, {
-                        color:'#fff'
-                    }]}>Cadastrar</Text>
-                </LinearGradient>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    onPress={() => navigation.goBack()}
-                    style={[styles.signIn, {
-                        borderColor: '#009387',
-                        borderWidth: 1,
-                        marginTop: 15
-                    }]}
-                >
-                    <Text style={[styles.textSign, {
-                        color: '#009387'
-                    }]}>Sign In</Text>
-                </TouchableOpacity>
+              <LinearButton on={data.signingUp} textLoading="Aguarde..." text='Cadastrar' onPress={() => handleSignUp()} />
+              <ClearButton text='Voltar' onPress={() => navigation.goBack()} />
             </View>
             </ScrollView>
         </Animatable.View>
@@ -221,7 +178,7 @@ const SignInScreen = ({navigation}) => {
     );
 };
 
-export default SignInScreen;
+export default SignUpScreen;
 
 const styles = StyleSheet.create({
     container: {
@@ -249,6 +206,7 @@ const styles = StyleSheet.create({
     },
     text_footer: {
         color: '#05375a',
+        marginTop: 20,
         fontSize: 18
     },
     action: {
