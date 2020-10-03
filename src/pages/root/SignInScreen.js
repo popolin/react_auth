@@ -175,9 +175,22 @@ const SignInScreen = ({navigation}) => {
           </View>
           <TextErrorView message={data.isValidPassword} />
           
+          <View style={{flexDirection:'row',justifyContent : 'space-between', marginTop: 10, marginBottom: 10}}>
           <TouchableOpacity>
-              <Text style={{color: Colors.LINK_TOUCH, marginTop:15}}>Esqueceu a senha?</Text>
+              <Text 
+                onPress={() => {}}
+                style={{color: Colors.LINK_TOUCH, left:0}}>Esqueceu a senha?</Text>
           </TouchableOpacity>
+          
+          <TouchableOpacity>
+              <Text 
+                onPress={() => {navigation.navigate('NotMeScreen')}}
+                style={{color: Colors.LINK_TOUCH, right:0}}>
+                    Não reconhece esta conta?
+                </Text>
+          </TouchableOpacity>
+
+          </View>
           <View style={styles.button}>
             <LinearButton on={data.logging} text='Login' onPress={() => loginHandle( data.password )} />
           </View>

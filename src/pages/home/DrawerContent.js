@@ -43,7 +43,9 @@ export function DrawerContent(props) {
                             </View>
                         </View>
 
-                        <View style={styles.row}>
+                        {
+                          false &&
+                          <View style={styles.row}>
                             <View style={styles.section}>
                                 <Paragraph style={[styles.paragraph, styles.caption]}>80</Paragraph>
                                 <Caption style={styles.caption}>Following</Caption>
@@ -53,6 +55,7 @@ export function DrawerContent(props) {
                                 <Caption style={styles.caption}>Followers</Caption>
                             </View>
                         </View>
+                        }
                     </View>
 
                     <Drawer.Section style={styles.drawerSection}>
@@ -97,7 +100,7 @@ export function DrawerContent(props) {
                                 size={size}
                                 />
                             )}
-                            label="Bookmarks"
+                            label="Tela Vazia"
                             onPress={() => {props.navigation.navigate('BookmarkScreen')}}
                         />
                     </Drawer.Section>

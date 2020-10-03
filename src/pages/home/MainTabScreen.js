@@ -55,7 +55,7 @@ const MainTabScreen = () => (
         }}
       />
       <Tab.Screen
-        name="Calendar"
+        name="Calendário"
         component={CalendarScreen}
         options={{
           tabBarLabel: 'Calendar',

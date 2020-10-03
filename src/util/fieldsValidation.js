@@ -34,4 +34,14 @@ export const validationDictionary = {
       message: "^Email inválido"
     }
   },
+  telefone: {
+    presence: {
+      allowEmpty: false,
+      message: "^Informe seu telefone"
+    },
+    length: {
+      is: 11,
+      message: "^Número deve conter 11 dígitos"
+    }
+  },
 }

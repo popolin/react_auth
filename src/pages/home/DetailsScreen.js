@@ -6,15 +6,15 @@ const DetailsScreen = ({navigation}) => {
       <View style={styles.container}>
         <Text>Details Screen</Text>
         <Button
-            title="Go to details screen...again"
+            title="Vá para detalhes novamente"
             onPress={() => navigation.push("Details")}
         />
         <Button
-            title="Go to home"
+            title="Vá para Home"
             onPress={() => navigation.navigate("Home")}
         />
         <Button
-            title="Go back"
+            title="Voltar"
             onPress={() => navigation.goBack()}
         />
       </View>

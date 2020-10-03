@@ -6,8 +6,8 @@ const CalendarScreen = () => {
       <View style={styles.container}>
         <Text>CalendarScreen</Text>
         <Button
-          title="Click Here"
-          onPress={() => alert('Button Clicked!')}
+          title="Clique aqui"
+          onPress={() => alert('Botão clicado!')}
         />
       </View>
     );

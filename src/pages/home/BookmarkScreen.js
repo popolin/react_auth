@@ -5,10 +5,10 @@ import { View, Text, Button, StyleSheet } from 'react-native';
 const BookmarkScreen = () => {
     return (
       <View style={styles.container}>
-        <Text>Bookmark Screen</Text>
+        <Text>Tela Vazia</Text>
         <Button
-          title="Click Here"
-          onPress={() => alert('Button Clicked!')}
+          title="Clique aqui"
+          onPress={() => alert('Clicou!')}
         />
       </View>
     );

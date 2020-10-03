@@ -5,4 +5,6 @@ export { default as FontAwesomeSpin } from './FontAwesomeSpin';
 export { default as LinearButton } from './LinearButton';
 export { default as Loading } from './Loading';
 export { default as TextErrorView } from './TextErrorView';
+export { default as IconCheck } from './IconCheck';
+
 
