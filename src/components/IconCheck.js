@@ -7,9 +7,9 @@ export default function IconCheck(props) {
     const iconNot = props.iconNot || 'x-circle';
     const colorOk = props.iconNot || 'green';
     const colorNot = props.iconNot || '#8a0303';
+
     return (
-      <Animatable.View
-          animation="bounceIn">
+      <Animatable.View animation="bounceIn">
           <Feather 
               name={props.on ? iconOk : iconNot}
               color={props.on ? colorOk : colorNot}

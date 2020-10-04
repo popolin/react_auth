@@ -40,8 +40,14 @@ export const validationDictionary = {
       message: "^Informe seu telefone"
     },
     length: {
-      is: 11,
-      message: "^Número deve conter 11 dígitos"
+      is: 14,
+      message: "^Número incompleto"
     }
   },
+  anexo: {
+    presence: {
+      allowEmpty: false,
+      message: "^Anexe uma imagem"
+    },
+  }
 }

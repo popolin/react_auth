@@ -47,3 +47,36 @@ export function signUp(data){
 
 }
 
+export function notMe(userId, email, telefone, anexo){
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({error: null})
+    }, 2000);
+  });
+}
+
+export function sendCodeForgetPassword(userId, code){
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({error: null})
+    }, 2000);
+  });
+}
+
+export function sendCodeEmail(userId){
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({error: null})
+    }, 2000);
+  });
+}
+
+export function sendCodeSMS(userId){
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({error: null})
+    }, 2000);
+  });
+}
+
+

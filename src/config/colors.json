@@ -19,5 +19,6 @@
   "TEXT_ERROR": "#721c24",
   "TEXT_INFO": "#0c5460",
   "BACKGROUND_ERROR": "#f8d7da",
-  "BACKGROUND_INFO": "#d1ecf1"
+  "BACKGROUND_INFO": "#d1ecf1",
+  "BTN_BLUE": "#4DB5C8"
 }

@@ -8,7 +8,7 @@ export default function TextErrorView(props) {
   const {message} = props;
   
   return(
-    message && 
+    (message && message.length > 0) && 
     <Animatable.View animation="fadeInLeft" duration={500}>
         <Text style={styles.errorMsg}>{message}</Text>
       </Animatable.View>

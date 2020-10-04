@@ -61,13 +61,11 @@ const SignInScreen = ({navigation}) => {
   const handleInputCrm = crmS => {
     const crm = crmS.replace(/[^0-9]/g, '')
     const isValidCRM = !validate("crm", crm) && !validate("uf", data.uf);
-    console.log(isValidCRM)
     setData({...data, crm, isValidCRM});
   }
 
   const handleSelectUF = uf => {
     const isValidCRM = !validate("crm", data.crm) && !validate("uf", uf);
-    console.log(isValidCRM)
     setData({...data, uf, isValidCRM});
   }
 
@@ -178,7 +176,7 @@ const SignInScreen = ({navigation}) => {
           <View style={{flexDirection:'row',justifyContent : 'space-between', marginTop: 10, marginBottom: 10}}>
           <TouchableOpacity>
               <Text 
-                onPress={() => {}}
+                onPress={() => {navigation.navigate('ForgotPasswordScreen')}}
                 style={{color: Colors.LINK_TOUCH, left:0}}>Esqueceu a senha?</Text>
           </TouchableOpacity>
           

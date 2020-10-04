@@ -31,8 +31,6 @@ const AuthProvider = ({children}) => {
       const storagedUser = await Storage.getItemJson(AUTH_USER);
       const storagedToken = await Storage.getItem(AUTH_TOKEN);
 
-      console.log(storagedUser);
-      console.log(storagedToken);
       if (storagedUser && storagedToken) {
         setUser(storagedUser);
         api.defaults.headers.Authorization = `Baerer ${storagedToken}`;

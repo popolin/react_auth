@@ -80,8 +80,8 @@ const SplashScreen = ({navigation}) => {
           </View>
           {
             preForm &&
-            <View style={[styles.textPrivate, {marginTop: 20}]}>
-                <Text style={styles.color_textPrivate} onPress={signOut}>
+            <View style={[styles.textPrivate, {marginTop: 20}]} >
+                <Text style={styles.color_textPrivate} onPress={() => {preForm.id ? navigation.navigate('NotMeScreen') : signOut()}}>
                     Você não é <Text style={[styles.color_textPrivate, {fontWeight: 'bold'}]}>{preForm.name}</Text>?
                 </Text>
             </View>
