@@ -1,7 +1,7 @@
 # App Auth
 ## ReactNative + (geolocation, image/camera picker, validate.js and input format)
 
-Simple application with screens for authentication, registration, password recovery and reporting of misuse. Uses data from CRM (regional council of medicine) as the authentication name.
+Simple app with screens for authentication, registration, password recovery and reporting of ilegal using. It uses data from CRM (brazilian regional council of medicine) as the authentication name.
 The objective was to apply techniques and save a model for reuse and save time on new projects.
 
 ## Screens
