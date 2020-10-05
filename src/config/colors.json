@@ -4,6 +4,7 @@
   "BACKGROUND_SEC": "#009387",
   "TITLE_MAIN": "#3095c3",
   "TEXT": "grey",
+  "ICON_TEXT": "grey",
   "BTN_MAIN_TEXT": "#fff",
   "BTN_MAIN_LINEAR": ["#08d4c4", "#01ab9d"],
   "PLACEHOLDER": "#666666",

@@ -58,7 +58,13 @@ export function notMe(userId, email, telefone, anexo){
 export function sendCodeForgetPassword(userId, code){
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve({error: null})
+      console.log(code)
+      console.log(code == '123123')
+      if(code == '123123'){
+        resolve({error: null})
+      } else {
+        resolve({error: 'Código inválido'})
+      }
     }, 2000);
   });
 }
@@ -79,4 +85,13 @@ export function sendCodeSMS(userId){
   });
 }
 
-
+export function changePassword(userId, password, rePassword){
+  console.log(userId);
+  console.log(password);
+  console.log(rePassword);
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({error: null})
+    }, 2000);
+  });
+}

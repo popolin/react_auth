@@ -1,10 +1,9 @@
-import React, {useRef} from 'react';
+import React from 'react';
 import { 
     View, 
     Text, 
     Image,
     TextInput,
-    Platform,
     StyleSheet,
     ScrollView,
     StatusBar,
@@ -15,6 +14,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import ImagePicker from 'react-native-image-picker';
 
 import Colors from '../../config/colors.json'
+import rootStyles from '../../assets/styles/root'
 
 import {validate} from "../../util/Validation"
 
@@ -118,27 +118,9 @@ const NotMeScreen = ({navigation}) => {
       }
     }
 
-
-    const onClickAddImage = () => {
-      const BUTTONS = ["Câmera", "Galeria", 'Cancelar'];
-      ActionSheet.show(
-        {options: BUTTONS, cancelButtonIndex: 2, title: 'Foto com CRM'},
-        buttonIdex => {
-          switch(buttonIdex){
-            case 0:
-              break;
-            case 1:
-              break;
-            case 2:
-              break;
-          }
-        })
-    }
-
-
     return (
       <View style={styles.container}>
-          <StatusBar backgroundColor='#009387' barStyle="light-content"/>
+        <StatusBar backgroundColor={Colors.BACKGROUND_SEC} barStyle="light-content"/>
         <View style={styles.header}>
             <Text style={styles.text_header}>Lamentamos o ocorrido!</Text>
         </View>
@@ -184,7 +166,7 @@ const NotMeScreen = ({navigation}) => {
             <View style={styles.action}>
                 <FontAwesome 
                     name="envelope-o"
-                    color="#05375a"
+                    color={Colors.INPUT_FORM}
                     size={20}
                 />
                 <TextInput 
@@ -206,7 +188,7 @@ const NotMeScreen = ({navigation}) => {
             <View style={styles.action}>
                 <FontAwesome 
                     name="phone"
-                    color="#05375a"
+                    color={Colors.INPUT_FORM}
                     size={20}
                 />
                 
@@ -231,7 +213,7 @@ const NotMeScreen = ({navigation}) => {
               <View style={styles.action}>
                   <FontAwesome 
                       name="paperclip"
-                      color="#05375a"
+                      color={Colors.INPUT_FORM}
                       size={20}
                   />
                   
@@ -278,68 +260,5 @@ const NotMeScreen = ({navigation}) => {
 export default NotMeScreen;
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1, 
-      backgroundColor: '#009387'
-    },
-    header: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        paddingHorizontal: 20,
-        paddingBottom: 50
-    },
-    footer: {
-        flex: Platform.OS === 'ios' ? 3 : 5,
-        backgroundColor: '#fff',
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
-        paddingHorizontal: 20,
-        paddingVertical: 30
-    },
-    text_header: {
-        color: '#fff',
-        fontWeight: 'bold',
-        fontSize: 28
-    },
-    text_footer: {
-        color: '#05375a',
-        marginTop: 20,
-        fontSize: 18
-    },
-    action: {
-        flexDirection: 'row',
-        marginTop: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#f2f2f2',
-        paddingBottom: 5
-    },
-    textInput: {
-        flex: 1,
-        marginTop: Platform.OS === 'ios' ? 0 : -12,
-        paddingLeft: 10,
-        color: '#05375a',
-    },
-    button: {
-        alignItems: 'center',
-        marginTop: 50
-    },
-    signIn: {
-        width: '100%',
-        height: 50,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 10
-    },
-    textSign: {
-        fontSize: 18,
-        fontWeight: 'bold'
-    },
-    textPrivate: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        marginTop: 20
-    },
-    color_textPrivate: {
-        color: Colors.TEXT
-    }
-  });
+  ...rootStyles
+});

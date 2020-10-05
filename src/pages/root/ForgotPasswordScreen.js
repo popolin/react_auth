@@ -1,10 +1,8 @@
-import React, {useRef} from 'react';
+import React from 'react';
 import { 
     View, 
     Text, 
-    Image,
     TextInput,
-    Platform,
     StyleSheet,
     ScrollView,
     StatusBar,
@@ -16,12 +14,15 @@ import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
 
 import Colors from '../../config/colors.json'
+import rootStyles from '../../assets/styles/root'
 
 import {useAuth} from '../../context/auth';
-import {sendCodeForgetPassword, sendCodeEmail, sendCodeSMS} from '../../services/Auth';
+import {sendCodeForgetPassword, sendCodeEmail, sendCodeSMS, changePassword} from '../../services/Auth';
 
 import {LinearButton, ClearButton, IconCheck} from '../../components'
 import TextErrorView from '../../components/TextErrorView';
+
+import {validate} from "../../util/Validation"
 
 const ForgotPasswordScreen = ({navigation}) => {
 
@@ -30,11 +31,15 @@ const ForgotPasswordScreen = ({navigation}) => {
     const [data, setData] = React.useState({
         type: null,
         code: '',
+        password: '',
+        rePassword: '',
         sending: false,
         preSent: false,
         sent: false,
-        isValidPassword: false,
-        isValidRePassword: false,
+        changed: false,
+        isValidCode: null,
+        isValidPassword: null,
+        isValidRePassword: null,
         secureTextEntry: true
     });
 
@@ -43,9 +48,30 @@ const ForgotPasswordScreen = ({navigation}) => {
           ...data,
           secureTextEntry: !data.secureTextEntry
       });
-  }
+    }
 
-    const onSendCode = async(code) => {
+    const onChangePassword = async() => {
+      const {password, rePassword} = data;
+
+      const passwordOK = !validate("password", password);
+      const rePasswordOK = passwordOK && !data.isValidRePassword;
+
+      if(passwordOK && rePasswordOK){
+        setData({...data, sending: true});
+        const response = await changePassword(preForm.id, password, rePassword);
+        setData({...data, sending: false, changed: !response.error});
+      }
+
+    }
+
+    const onSendCode = async() => {
+
+      const {code} = data;
+      if(code.trim().length == 0){
+        setData({...data, isValidCode: 'Você deve informar o código'});  
+        return;
+      }
+      
       setData({...data, sending: true});
       const response = await sendCodeForgetPassword(preForm.id, code);
       setData({...data, sending: false, sent: !response.error});
@@ -59,44 +85,54 @@ const ForgotPasswordScreen = ({navigation}) => {
     }
 
     const onTypeEmail = async() => {
-      const response = await sendCodeEmail(preForm.id);
-      setData({...data, type: 'Email', preSent: true});
+      sendCodeEmail(preForm.id);
+      setData(prevState => ({ ...prevState, type: 'Email', preSent: true }));
     }
 
     const onTypeSMS = async() => {
-      const response = await sendCodeSMS(preForm.id);
-      setData({...data, type: 'SMS', preSent: true});
+      sendCodeSMS(preForm.id);
+      setData(prevState => ({ ...prevState, type: 'SMS', preSent: true }));
     }
 
-    const handleCodeChange = () => {
-      setData({
-        ...data,
-        code
-      });
+    const handleCodeChange = code => {
+      setData({ ...data, code });
     }
-
-    const handlePasswordChange = () => {
-
-    }
-
-    const handleRePasswordChange = () => {
-
-    }
-
     
-    const renderChangePassword = () => (
+    const handlePasswordChange = password => {
+      const isValidPassword = validate("password", password)
+      setData(prevState => ({ ...prevState, isValidPassword, password }));
+    }
+
+    const handleRePasswordChange = rePassword => {
+      let isValidRePassword = null;
+      if(data.password !== rePassword){
+        isValidRePassword = "Confirmação de senha inválida";
+      }
+      setData(prevState => ({ ...prevState, rePassword, isValidRePassword }));
+    }
+
+    const PasswordChanged = ({when}) => (
+      when &&
       <>
+        <Text style={[styles.text_footer, {marginTop: 0}]}>Sua senha foi alterada com sucesso!</Text>
         <View style={styles.textPrivate}>
           <Text style={[styles.color_textPrivate, {fontWeight: 'bold', marginBottom: 10}]}>
-              Informe uma nova senha:
+              Por favor, faça o login novamente utilizando sua nova senha:
           </Text>
         </View>
-
+      </> 
+    )
+    
+    const ChangePassword = (when) => (
+      when &&
+      <>
+        <Text style={styles.text_footer}>Defina uma nova senha:</Text>
+        
         <Text style={styles.text_footer}>Senha</Text>
         <View style={styles.action}>
             <Feather 
                 name="lock"
-                color="#05375a"
+                color={Colors.INPUT_FORM}
                 size={20}
             />
             <TextInput 
@@ -112,13 +148,13 @@ const ForgotPasswordScreen = ({navigation}) => {
                 {data.secureTextEntry ? 
                 <Feather 
                     name="eye-off"
-                    color="grey"
+                    color={Colors.TEXT}
                     size={20}
                 />
                 :
                 <Feather 
                     name="eye"
-                    color="grey"
+                    color={Colors.TEXT}
                     size={20}
                 />
                 }
@@ -131,7 +167,7 @@ const ForgotPasswordScreen = ({navigation}) => {
         <View style={styles.action}>
             <Feather 
                 name="lock"
-                color="#05375a"
+                color={Colors.INPUT_FORM}
                 size={20}
             />
             <TextInput 
@@ -147,12 +183,12 @@ const ForgotPasswordScreen = ({navigation}) => {
         <TextErrorView message={data.isValidRePassword} />
         
         <View style={styles.button}>
-          <LinearButton on={data.sending} textLoading="Aguarde..." text='Enviar' onPress={() => onSendCode( data.code )} />
+          <LinearButton on={data.sending} textLoading="Aguarde..." text='Alterar Senha' onPress={() => onChangePassword()} />
         </View>
       </>
     )
 
-    const renderCodeSent = () => {
+    const CodeSent = () => {
       if (data.type == 'SMS'){
         return (
         <>
@@ -161,7 +197,7 @@ const ForgotPasswordScreen = ({navigation}) => {
             {' '}Enviamos o código via SMS para
             </Text>
             <Text style={[styles.color_textPrivate, {fontWeight: 'bold', marginBottom: 10}]}>
-              (61) 98181-1212
+              {preForm._telefone}
             </Text>
           </View>
         </>
@@ -174,7 +210,7 @@ const ForgotPasswordScreen = ({navigation}) => {
               Enviamos o código para o email
             </Text>
             <Text style={[styles.color_textPrivate, {fontWeight: 'bold', marginBottom: 10}]}>
-              {' '}micpopolin@gmail.com
+              {` ${preForm._email}`}
             </Text>
           </View>
         </>
@@ -182,14 +218,14 @@ const ForgotPasswordScreen = ({navigation}) => {
       }
     }
 
-    const renderCodeRecover = () => (
+    const CodeRecover = (when) => (
+      when && 
       <>
-        {renderCodeSent()}
-        
-
+        <Text style={[styles.text_footer, {marginTop: 0}]}>Qual o código de segurança?</Text>
+        <CodeSent />
         <View style={styles.action}>
             <Feather 
-                name="lock"
+                name="key"
                 color={Colors.TEXT}
                 size={20}
             />
@@ -197,45 +233,47 @@ const ForgotPasswordScreen = ({navigation}) => {
                 placeholder="Código de segurança"
                 placeholderTextColor={Colors.PLACEHOLDER}
                 style={styles.textInput}
-                autoCapitalize="none"
                 onChangeText={(val) => handleCodeChange(val)}
             />
         </View>
+        <TextErrorView message={data.isValidCode} />
+        
         <View style={styles.button}>
           <LinearButton on={data.sending} textLoading="Aguarde..." text='Enviar' onPress={() => onSendCode( data.code )} />
         </View>
       </>
     )
 
-    const renderTypeRecover = () => (
+    const TypeRecover = ({when}) => (
+      when &&
       <>
         <Text style={[styles.text_footer, {marginTop: 0}]}>Como deseja recuperar sua senha?</Text>
         <TouchableOpacity
           onPress={() => onTypeEmail()}
-          style={[styles.linearButtonTouch, {
+          style={[styles.linearBlueButton, {
               borderColor: Colors.BTN_BLUE,
               marginTop: 30
           }]} >
-          <Text style={[styles.linearButtonText, {
+          <Text style={[styles.linearBlueButtonText, {
               color: Colors.BTN_BLUE
           }]}>Email</Text>
+          <Text style={styles.linearBlueButtonDetail}>({preForm._email})</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => onTypeSMS}
-          style={[styles.linearButtonTouch, {
-              borderColor: Colors.BTN_BLUE,
-              marginTop: 15
+          onPress={() => onTypeSMS()}
+          style={[styles.linearBlueButton, {
           }]} >
-          <Text style={[styles.linearButtonText, {
+          <Text style={[styles.linearBlueButtonText, {
               color: Colors.BTN_BLUE
           }]}>SMS</Text>
+          <Text style={styles.linearBlueButtonDetail}>({preForm._telefone})</Text>
         </TouchableOpacity>
       </>
     )
 
     return (
       <View style={styles.container}>
-          <StatusBar backgroundColor='#009387' barStyle="light-content"/>
+        <StatusBar backgroundColor={Colors.BACKGROUND_SEC} barStyle="light-content"/>
         <View style={styles.header}>
             <Text style={styles.text_header}>Esqueceu sua senha?</Text>
         </View>
@@ -243,18 +281,15 @@ const ForgotPasswordScreen = ({navigation}) => {
             animation="fadeInUpBig"
             style={styles.footer}>
             <ScrollView>
-              { (!data.preSent && !data.sent) && 
-                renderTypeRecover()
-              }
-              { (data.preSent && !data.sent) && 
-                renderCodeRecover()
-              }
-              { data.sent && 
-                renderChangePassword()
-              }
+              <TypeRecover when={!data.preSent && !data.sent} />
+              { CodeRecover(data.preSent && !data.sent) }
               
-              <View style={styles.button}>
-                <ClearButton text='Voltar' onPress={() => navigation.goBack()} />
+              { ChangePassword(data.sent && !data.changed) }
+              <PasswordChanged when={data.sent && data.changed} />
+
+              
+              <View style={[styles.button, {marginTop: 15}]}>
+                <ClearButton text={data.changed ? 'Voltar para Login' : 'Cancelar'} onPress={() => navigation.goBack()} />
               </View>  
             </ScrollView>
         </Animatable.View>
@@ -265,82 +300,5 @@ const ForgotPasswordScreen = ({navigation}) => {
 export default ForgotPasswordScreen;
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1, 
-      backgroundColor: '#009387'
-    },
-    header: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        paddingHorizontal: 20,
-        paddingBottom: 50
-    },
-    footer: {
-        flex: Platform.OS === 'ios' ? 3 : 5,
-        backgroundColor: '#fff',
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
-        paddingHorizontal: 20,
-        paddingVertical: 30
-    },
-    text_header: {
-        color: '#fff',
-        fontWeight: 'bold',
-        fontSize: 28
-    },
-    text_footer: {
-        color: '#05375a',
-        marginTop: 20,
-        fontSize: 18
-    },
-    action: {
-        flexDirection: 'row',
-        marginTop: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#f2f2f2',
-        paddingBottom: 5
-    },
-    textInput: {
-        flex: 1,
-        marginTop: Platform.OS === 'ios' ? 0 : -12,
-        paddingLeft: 10,
-        color: '#05375a',
-    },
-    button: {
-        alignItems: 'center',
-        marginTop: 30
-    },
-    signIn: {
-        width: '100%',
-        height: 50,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 10
-    },
-    textSign: {
-        fontSize: 18,
-        fontWeight: 'bold'
-    },
-    textPrivate: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        marginTop: 20
-    },
-    color_textPrivate: {
-        color: Colors.TEXT
-    },
-    linearButtonTouch: {
-      width: '100%',
-      height: 50,
-      paddingStart: 10,
-      justifyContent: 'center',
-      alignItems: 'flex-start',
-      borderRadius: 10,
-      borderWidth: 1,
-    },
-    linearButtonText: {
-      fontSize: 18,
-      fontWeight: 'bold'
-    },
-  
-  });
+    ...rootStyles,
+});

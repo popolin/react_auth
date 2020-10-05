@@ -4,7 +4,6 @@ import {
     Text, 
     TouchableOpacity, 
     TextInput,
-    Platform,
     StyleSheet ,
     StatusBar
 } from 'react-native';
@@ -23,6 +22,7 @@ import Locations from '../../util/Locations';
 import Permissions from '../../util/Permissions';
 import {findAddressByCurrentLatLng} from '../../services/Api'
 import Colors from '../../config/colors.json'
+import rootStyles from '../../assets/styles/root'
 
 const SignInScreen = ({navigation}) => {
 
@@ -174,20 +174,19 @@ const SignInScreen = ({navigation}) => {
           <TextErrorView message={data.isValidPassword} />
           
           <View style={{flexDirection:'row',justifyContent : 'space-between', marginTop: 10, marginBottom: 10}}>
-          <TouchableOpacity>
-              <Text 
-                onPress={() => {navigation.navigate('ForgotPasswordScreen')}}
-                style={{color: Colors.LINK_TOUCH, left:0}}>Esqueceu a senha?</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity>
-              <Text 
-                onPress={() => {navigation.navigate('NotMeScreen')}}
-                style={{color: Colors.LINK_TOUCH, right:0}}>
-                    Não reconhece esta conta?
-                </Text>
-          </TouchableOpacity>
-
+            <TouchableOpacity>
+                <Text 
+                  onPress={() => {navigation.navigate('ForgotPasswordScreen')}}
+                  style={{color: Colors.LINK_TOUCH, left:0}}>Esqueceu a senha?</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity>
+                <Text 
+                  onPress={() => {navigation.navigate('NotMeScreen')}}
+                  style={{color: Colors.LINK_TOUCH, right:0}}>
+                      Não reconhece esta conta?
+                  </Text>
+            </TouchableOpacity>
           </View>
           <View style={styles.button}>
             <LinearButton on={data.logging} text='Login' onPress={() => loginHandle( data.password )} />
@@ -217,7 +216,7 @@ const SignInScreen = ({navigation}) => {
   return (
     
     <View style={styles.container}>
-        <StatusBar backgroundColor={Colors.BACKGROUND_SEC} barStyle="light-content"/>
+      <StatusBar backgroundColor={Colors.BACKGROUND_SEC} barStyle="light-content"/>
       <View style={styles.header}>
         <Text style={styles.text_header}>
           {preForm ? `Olá, ${preForm.name}!` : 'Bem vindo!'}
@@ -225,7 +224,7 @@ const SignInScreen = ({navigation}) => {
       </View>
       <Animatable.View 
           animation="fadeInUpBig"
-          style={styles.footer}>
+          style={[styles.footer, {flex: 5}]}>
 
           {
             data.error &&
@@ -310,80 +309,5 @@ const SignInScreen = ({navigation}) => {
 export default SignInScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1, 
-    backgroundColor: Colors.BACKGROUND_SEC
-  },
-  header: {
-      flex: 1,
-      justifyContent: 'flex-end',
-      paddingHorizontal: 20,
-      paddingBottom: 50
-  },
-  footer: {
-      flex: 3,
-      backgroundColor: Colors.BACKGROUND_FOOTER,
-      borderTopLeftRadius: 30,
-      borderTopRightRadius: 30,
-      paddingHorizontal: 20,
-      paddingVertical: 30
-  },
-  text_header: {
-      color: Colors.HEADER_TEXT,
-      fontWeight: 'bold',
-      fontSize: 30
-  },
-  text_footer: {
-      color: Colors.FOOTER_TEXT,
-      fontSize: 18
-  },
-  action: {
-      flexDirection: 'row',
-      marginTop: 5,
-      borderBottomWidth: 1,
-      borderBottomColor: Colors.BTN_BORDER_ACTION,
-      paddingBottom: 5
-  },
-  actionError: {
-      flexDirection: 'row',
-      marginTop: 10,
-      borderBottomWidth: 1,
-      borderBottomColor: Colors.BTN_ERROR,
-      paddingBottom: 5
-  },
-  textInput: {
-      flex: 1,
-      marginTop: Platform.OS === 'ios' ? 0 : -12,
-      paddingLeft: 10,
-      color: Colors.INPUT_FORM,
-  },
-  button: {
-      alignItems: 'center',
-      marginTop: 10
-  },
-  signIn: {
-      width: '100%',
-      height: 50,
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderRadius: 10
-  },
-  textSign: {
-      fontSize: 18,
-      fontWeight: 'bold'
-  },
-  selectUF: {
-    flex: 1,
-    marginTop: Platform.OS === 'ios' ? 0 : -12,
-    paddingLeft: 10,
-    color: Colors.INPUT_FORM,
-    maxWidth: 100,
-  },
-  acaoCrmFind: {
-
-  },
-  acaoCrmFindDisabled: {
-    opacity: 0.5
-  },
-  
+  ...rootStyles
 });

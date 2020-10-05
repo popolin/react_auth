@@ -12,6 +12,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import Colors from '../../config/colors.json'
+import rootStyles from '../../assets/styles/root'
 
 import {useAuth} from '../../context/auth';
 
@@ -21,8 +22,8 @@ const SplashScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-        <StatusBar backgroundColor={Colors.BACKGROUND_SEC} barStyle="light-content"/>
-      <View style={styles.header}>
+      <StatusBar backgroundColor={Colors.BACKGROUND_SEC} barStyle="light-content"/>
+      <View style={[styles.header, {flex: 1, alignItems: 'center', paddingBottom: 90}]}>
           <Animatable.Image 
               animation="bounceIn"
               duraton="1500"
@@ -39,7 +40,7 @@ const SplashScreen = ({navigation}) => {
           />
       </View>
       <Animatable.View 
-          style={styles.footer}
+          style={styles.footerSplash}
           animation="fadeInUpBig" >
           {
            preForm &&
@@ -99,77 +100,39 @@ const width_prontow = height * 0.44;
 const height_prontow = height * 0.12;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1, 
-    backgroundColor: Colors.BACKGROUND_SEC
-  },
-  header: {
-      flex: 2,
-      justifyContent: 'center',
-      alignItems: 'center'
-  },
-  footer: {
-      flex: 1,
-      backgroundColor: Colors.BACKGROUND_MAIN,
-      borderTopLeftRadius: 30,
-      borderTopRightRadius: 30,
-      paddingTop: 40,
-      paddingBottom: 70,
-      paddingHorizontal: 30
-  },
-  logo: {
+    ...rootStyles,
+    logo: {
       width: height_logo,
       height: height_logo
-  },
-  prontow: {
-    marginTop: 10,
-    height: height_prontow,
-    width: width_prontow
-  },
-  title: {
-      color: Colors.TITLE_MAIN,
-      fontFamily: 'Roboto,sans-serif',
-      fontSize: 26,
-      letterSpacing: 3,
-      textTransform: 'uppercase',
-      fontWeight: '700'
-  },
-  text: {
-      color: Colors.TEXT,
-      marginTop:5
-  },
-  description: {
-    fontSize:16,
-    color: 'grey',
-    marginTop: 5,
-    fontStyle: 'italic',
-    position: 'relative',
-    textAlign: 'left',
-  },
-  button: {
+    },
+    prontow: {
+      marginTop: 10,
+      height: height_prontow,
+      width: width_prontow
+    },
+    button: {
       alignItems: 'flex-end',
       marginTop: 30
-  },
-  signIn: {
+    },
+    signIn: {
       width: 180,
       height: 40,
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: 50,
       flexDirection: 'row'
-  },
-  textSign: {
+    },
+    textSign: {
       color: Colors.BTN_MAIN_TEXT,
       fontWeight: 'bold'
-  },
-  textPrivate: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 20
-  },
-  color_textPrivate: {
-      color: Colors.TEXT
-  }
-  
+    },  
+    footerSplash: {
+      flex: 1,
+      backgroundColor: Colors.BACKGROUND_MAIN,
+      borderTopLeftRadius: 30,
+      borderTopRightRadius: 30,
+      paddingVertical: 30,
+      paddingHorizontal: 20
+    },
 });
 
