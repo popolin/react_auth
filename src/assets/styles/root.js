@@ -18,7 +18,7 @@ export default {
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     paddingHorizontal: 20,
-    paddingVertical: 30
+    paddingVertical: 30,
   },
   action: {
     flexDirection: 'row',
@@ -27,15 +27,6 @@ export default {
     borderBottomColor: Colors.BTN_BORDER_ACTION,
     paddingBottom: 5
   },
-  // logo: {
-  //     width: height_logo,
-  //     height: height_logo
-  // },
-  // prontow: {
-  //   marginTop: 10,
-  //   height: height_prontow,
-  //   width: width_prontow
-  // },
   title: {
       color: Colors.TITLE_MAIN,
       fontFamily: 'Roboto,sans-serif',
@@ -83,14 +74,6 @@ export default {
       alignItems: 'flex-end',
       marginTop: 20
   },
-  // signIn: {
-  //     width: 180,
-  //     height: 40,
-  //     justifyContent: 'center',
-  //     alignItems: 'center',
-  //     borderRadius: 50,
-  //     flexDirection: 'row'
-  // },
   textSign: {
       color: Colors.BTN_MAIN_TEXT,
       fontWeight: 'bold'

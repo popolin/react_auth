@@ -24,6 +24,8 @@ import {notMe} from '../../services/Auth';
 import {LinearButton, ClearButton, IconCheck} from '../../components'
 import TextErrorView from '../../components/TextErrorView';
 
+import TextInputMask from 'react-native-text-input-mask';
+
 const NotMeScreen = ({navigation}) => {
 
     const {preForm, signOut} = useAuth();
@@ -126,7 +128,7 @@ const NotMeScreen = ({navigation}) => {
         </View>
         <Animatable.View 
             animation="fadeInUpBig"
-            style={styles.footer}>
+            style={[styles.footer, {flex: 7}]}>
             <ScrollView>
               {
                 data.sent &&
@@ -192,10 +194,10 @@ const NotMeScreen = ({navigation}) => {
                     size={20}
                 />
                 
-                <TextInput
+                <TextInputMask
                     keyboardType='numeric'
                     placeholder="Seu telefone"
-                    // mask={"([00]) [0000]-[0000]"}
+                    mask={"([00]) [90000]-[0000]"}
                     style={styles.textInput}
                     editable={!data.sent}
                     onChangeText={(val) => handleTelefoneChange(val)}

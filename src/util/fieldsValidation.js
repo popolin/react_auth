@@ -40,7 +40,8 @@ export const validationDictionary = {
       message: "^Informe seu telefone"
     },
     length: {
-      is: 14,
+      minimum: 14,
+      maximum: 15,
       message: "^Número incompleto"
     }
   },

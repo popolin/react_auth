@@ -4,7 +4,6 @@ import {
     Text, 
     TouchableOpacity, 
     TextInput,
-    Platform,
     StyleSheet,
     ScrollView,
     StatusBar,
@@ -21,8 +20,9 @@ import {validate} from "../../util/Validation"
 import {signUp} from '../../services/Auth';
 import {useAuth} from '../../context/auth';
 
-import {LinearButton, ClearButton} from '../../components/'
+import {LinearButton, ClearButton, IconCheck} from '../../components/'
 import TextErrorView from '../../components/TextErrorView';
+
 
 const SignUpScreen = ({navigation}) => {
 
@@ -30,12 +30,23 @@ const SignUpScreen = ({navigation}) => {
 
     const [data, setData] = React.useState({
         email: '',
+        telefone: '',
         password: '',
         signingUp: false,
         checkEmail: null,
+        checkTelefone: null,
         isValidPassword: null,
         secureTextEntry: true
     });
+
+    const handlePhoneChange = (val) => {
+      const checkTelefone = validate("telefone", val);
+      setData({
+        ...data,
+        telefone: val,
+        checkTelefone
+      });
+    }
 
     const handleEmailChange = (val) => {
       const checkEmail = validate("email", val);
@@ -100,7 +111,7 @@ const SignUpScreen = ({navigation}) => {
         </View>
         <Animatable.View 
             animation="fadeInUpBig"
-            style={styles.footer}>
+            style={[styles.footer, {flex: 6}]}>
             <ScrollView>
             <Text style={[styles.text_footer, {marginTop: 0}]}>Email</Text>
             <View style={styles.action}>
@@ -115,16 +126,28 @@ const SignUpScreen = ({navigation}) => {
                     autoCapitalize="none"
                     onChangeText={(val) => handleEmailChange(val)}
                 />
-                {!data.checkEmail ? 
-                <Animatable.View
-                    animation="bounceIn">
-                    <Feather 
-                        name="check-circle"
-                        color={Colors.ICON_GREEN}
-                        size={20}
-                    />
-                </Animatable.View>
-                : null}
+
+                <IconCheck on={!data.checkEmail } />
+                
+            </View>
+            <TextErrorView message={data.checkEmail} />
+
+            <Text style={[styles.text_footer, {marginTop: 0}]}>Telefone</Text>
+            <View style={styles.action}>
+                <FontAwesome 
+                    name="phone"
+                    color={Colors.INPUT_FORM}
+                    size={20}
+                />
+                <TextInput 
+                    placeholder="Telefone"
+                    style={styles.textInput}
+                    autoCapitalize="none"
+                    onChangeText={(val) => handlePhoneChange(val)}
+                />
+
+                <IconCheck on={!data.checkTelefone } />
+                
             </View>
             <TextErrorView message={data.checkEmail} />
 
